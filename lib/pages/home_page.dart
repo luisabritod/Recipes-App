@@ -15,7 +15,9 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
 
-    Provider.of<ReceitasProvider>(context, listen: false).buscarReceitas();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Provider.of<ReceitasProvider>(context, listen: false).buscarReceitas();
+    });
   }
 
   @override

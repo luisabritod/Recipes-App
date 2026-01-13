@@ -16,10 +16,12 @@ class _DetailsPageState extends State<DetailsPage> {
   void initState() {
     super.initState();
 
-    Provider.of<ReceitasProvider>(
-      context,
-      listen: false,
-    ).buscarDetalhesDaReceita(widget.receitaId);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Provider.of<ReceitasProvider>(
+        context,
+        listen: false,
+      ).buscarDetalhesDaReceita(widget.receitaId);
+    });
   }
 
   @override
