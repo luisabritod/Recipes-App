@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:receitas_app/core/theme/app_colors.dart';
 import 'package:receitas_app/providers/providers.dart';
 
 class DetailsPage extends StatefulWidget {
@@ -28,78 +29,109 @@ class _DetailsPageState extends State<DetailsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Detalhes da receita"),
-        backgroundColor: Colors.purple,
-        foregroundColor: Colors.white,
+        title: const Text("Recipe Details"),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: AppColors.secondary),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
       ),
-      body: Center(
-        child: Consumer<ReceitasProvider>(
-          builder: (context, provider, _) {
-            if (provider.carregando) {
-              return const CircularProgressIndicator();
-            }
-            if (provider.receitaDetalhada != null) {
-              return SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Image.network(provider.receitaDetalhada!.urlImagem),
-                    Padding(
-                      padding: EdgeInsets.all(16),
-                      child: Text(
-                        provider.receitaDetalhada!.nome,
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
+      body: Consumer<ReceitasProvider>(
+        builder: (context, provider, _) {
+          if (provider.carregando) {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+
+          if (provider.receitaDetalhada == null) {
+            return const Center(
+              child: Text("No recipe found."),
+            );
+          }
+
+          final receita = provider.receitaDetalhada!;
+
+          return SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Image.network(
+                  receita.urlImagem,
+                  height: 250,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) {
+                    return Container(
+                      height: 250,
+                      color: Colors.grey[300],
+                      child: const Icon(Icons.error, size: 50),
+                    );
+                  },
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Text(
+                    receita.nome,
+                    textAlign: TextAlign.center,
+                    style: Theme.of(context).textTheme.headlineMedium,
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Ingredients:',
+                        style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                              fontSize: 20,
+                            ),
+                      ),
+                      const SizedBox(height: 12),
+                      ...receita.ingredientes.map(
+                        (ingrediente) => Padding(
+                          padding: const EdgeInsets.only(bottom: 8),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text('• ', style: TextStyle(fontSize: 16)),
+                              Expanded(
+                                child: Text(
+                                  ingrediente,
+                                  style: const TextStyle(fontSize: 16),
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 16),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Ingredientes:',
-                            style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          SizedBox(height: 8),
-                          // usamos .map para transformar cada string da lista em um widget Text
-                          for (final ingrediente
-                              in provider.receitaDetalhada!.ingredientes)
-                            Text('• $ingrediente'),
-                        ],
-                      ),
-                    ),
-                    SizedBox(height: 16),
-                    Padding(
-                      padding: EdgeInsets.all(16),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Modo de preparo:',
-                            style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          SizedBox(height: 8),
-                          Text(provider.receitaDetalhada!.instrucoes),
-                        ],
-                      ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              );
-            }
-            return Text("Nenhuma receita encontrada.");
-          },
-        ),
+                const SizedBox(height: 24),
+                Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Instructions:',
+                        style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                              fontSize: 20,
+                            ),
+                      ),
+                      const SizedBox(height: 12),
+                      Text(
+                        receita.instrucoes,
+                        style: const TextStyle(fontSize: 16, height: 1.5),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 24),
+              ],
+            ),
+          );
+        },
       ),
     );
   }

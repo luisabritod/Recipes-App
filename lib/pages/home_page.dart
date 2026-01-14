@@ -23,48 +23,73 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Receitas")),
-      body: Center(
-        child: Consumer<ReceitasProvider>(
-          builder: (context, receitas, _) {
-            if (receitas.carregando) {
-              return CircularProgressIndicator();
-            } else {
-              return ListView.builder(
-                itemBuilder: (context, index) {
-                  final receita = receitas.receitas[index];
-                  return InkWell(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) =>
-                              DetailsPage(receitaId: receita.id),
-                        ),
-                      );
-                    },
-                    child: Card(
-                      child: Column(
-                        children: [
-                          Image.network(receita.urlImagem),
-                          SizedBox(height: 10),
-                          Text(
-                            receita.nome,
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ],
+      appBar: AppBar(
+        title: const Text("Recipes"),
+      ),
+      body: Consumer<ReceitasProvider>(
+        builder: (context, receitas, _) {
+          if (receitas.carregando) {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+
+          if (receitas.receitas.isEmpty) {
+            return const Center(
+              child: Text('No recipes found'),
+            );
+          }
+
+          return ListView.builder(
+            padding: const EdgeInsets.symmetric(vertical: 8),
+            itemCount: receitas.receitas.length,
+            itemBuilder: (context, index) {
+              final receita = receitas.receitas[index];
+              return Card(
+                margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                clipBehavior: Clip.antiAlias,
+                child: InkWell(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => DetailsPage(receitaId: receita.id),
                       ),
-                    ),
-                  );
-                },
-                itemCount: receitas.receitas.length,
+                    );
+                  },
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Image.network(
+                        receita.urlImagem,
+                        height: 200,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) {
+                          return Container(
+                            height: 200,
+                            color: Colors.grey[300],
+                            child: const Icon(Icons.error, size: 50),
+                          );
+                        },
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: Text(
+                          receita.nome,
+                          style: const TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               );
-            }
-          },
-        ),
+            },
+          );
+        },
       ),
     );
   }
