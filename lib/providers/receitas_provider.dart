@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:receitas_app/models/models.dart';
 import 'package:receitas_app/services/services.dart';
@@ -19,8 +21,10 @@ class ReceitasProvider extends ChangeNotifier {
 
     try {
       _receitas = await _service.buscarReceitas();
+      // Randomize recipe order
+      _receitas.shuffle(Random());
     } catch (e) {
-      print('Erro no provider ao buscar receitas: $e');
+      print('Error fetching recipes: $e');
     } finally {
       _carregando = false;
       notifyListeners();
@@ -29,12 +33,13 @@ class ReceitasProvider extends ChangeNotifier {
 
   Future<void> buscarDetalhesDaReceita(String id) async {
     _carregando = true;
+
     notifyListeners();
 
     try {
       _receitaDetalhada = await _service.buscarDetalhesDaReceita(id);
     } catch (e) {
-      print('Erro no provider ao buscar receitas: $e');
+      print('Error fetching recipe details: $e');
     } finally {
       _carregando = false;
       notifyListeners();
