@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:receitas_app/core/theme/app_theme.dart';
 import 'package:receitas_app/pages/pages.dart';
 import 'package:receitas_app/providers/providers.dart';
 
@@ -18,13 +19,10 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Receitas App',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
+      title: 'Recipes App',
+      theme: AppTheme.lightTheme,
       debugShowCheckedModeBanner: false,
-      home: const HomePage(),
+      home: const SplashPage(),
     );
   }
 }
